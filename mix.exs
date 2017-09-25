@@ -29,7 +29,11 @@ defmodule SignedOverpunch.Mixfile do
   #   {:my_dep, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
   #
   # Type "mix help deps" for more examples and options
-  defp deps, do: []
+  defp deps do
+    [
+      {:ex_doc, "~> 0.16", only: :dev, runtime: false}
+    ]
+  end
 
   defp description do
     "Package for converting strings using the signed overpunch format into integers."

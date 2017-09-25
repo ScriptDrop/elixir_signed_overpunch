@@ -39,20 +39,20 @@ defmodule SignedOverpunch do
 
   ## Examples
 
-    iex> SignedOverpunch.convert("100{")
-    {:ok, 1000}
+      iex> SignedOverpunch.convert("100{")
+      {:ok, 1000}
 
-    iex> SignedOverpunch.convert("100}")
-    {:ok, -1000}
+      iex> SignedOverpunch.convert("100}")
+      {:ok, -1000}
 
-    iex> SignedOverpunch.convert("00I")
-    {:ok, 9}
+      iex> SignedOverpunch.convert("00I")
+      {:ok, 9}
 
-    iex> SignedOverpunch.convert("000")
-    :error
+      iex> SignedOverpunch.convert("000")
+      :error
 
-    iex> SignedOverpunch.convert("GOTCHA")
-    :error
+      iex> SignedOverpunch.convert("GOTCHA")
+      :error
   """
   def convert(string) when is_bitstring(string) do
     string
@@ -66,25 +66,25 @@ defmodule SignedOverpunch do
   @doc """
   Converts a string in signed overpunch format to an integer.
 
-  Similar to `SignedOverpunch.convert/1`, but raises an ArgumentError if the
+  Similar to `SignedOverpunch.convert/1`, but raises an `ArgumentError` if the
   input provided is not valid signed overpunch.
 
   ## Examples
 
-    iex> SignedOverpunch.convert!("100{")
-    1000
+      iex> SignedOverpunch.convert!("100{")
+      1000
 
-    iex> SignedOverpunch.convert!("100}")
-    -1000
+      iex> SignedOverpunch.convert!("100}")
+      -1000
 
-    iex> SignedOverpunch.convert!("00I")
-    9
+      iex> SignedOverpunch.convert!("00I")
+      9
 
-    iex> SignedOverpunch.convert!("000")
-    ** (ArgumentError) invalid signed overpunch
+      iex> SignedOverpunch.convert!("000")
+      ** (ArgumentError) invalid signed overpunch
 
-    iex> SignedOverpunch.convert!("GOTCHA")
-    ** (ArgumentError) invalid signed overpunch
+      iex> SignedOverpunch.convert!("GOTCHA")
+      ** (ArgumentError) invalid signed overpunch
   """
   def convert!(string) do
     case convert(string) do
