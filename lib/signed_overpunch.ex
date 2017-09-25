@@ -5,7 +5,7 @@ defmodule SignedOverpunch do
   Module for converting a string in signed overpunch format into the
   corresponding integer.
 
-  Converstion Table:
+  ## Conversion Table:
 
   | Code | Digit | Sign |
   | ---- | ----- | ---- |
