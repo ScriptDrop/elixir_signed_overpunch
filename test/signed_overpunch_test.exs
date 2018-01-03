@@ -37,9 +37,17 @@ defmodule SignedOverpunchTest do
 
   test "string is a word" do
     assert :error == SignedOverpunch.convert("NOTANUMBER")
+
+    assert_raise ArgumentError, "invalid signed overpunch value: NOTANUMBER", fn ->
+      SignedOverpunch.convert!("NOTANUMBER")
+    end
   end
 
   test "string is an integer" do
     assert :error == SignedOverpunch.convert("123")
+
+    assert_raise ArgumentError, "invalid signed overpunch value: 123", fn ->
+      SignedOverpunch.convert!("123")
+    end
   end
 end
