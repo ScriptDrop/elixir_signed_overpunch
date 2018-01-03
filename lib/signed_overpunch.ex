@@ -57,7 +57,7 @@ defmodule SignedOverpunch do
   def convert(string) when is_bitstring(string) do
     string
     |> Integer.parse
-    |> get_profile
+    |> get_profile(string)
     |> perform_conversion
     |> apply_sign
     |> format_return
@@ -102,10 +102,15 @@ defmodule SignedOverpunch do
   defp apply_sign({:neg, int}) when is_integer(int), do: 0 - int
   defp apply_sign(_), do: :error
 
-  defp get_profile({int, overpunch_char}) do
+  defp get_profile({int, overpunch_char}, _) do
     {int, profile(overpunch_char)}
   end
-  defp get_profile(_), do: :error
+  # This handles the "specialish" case where only the overpunch char is present
+  # and Integer.parse returns :error
+  defp get_profile(:error, string) when byte_size(string) == 1 do
+    {0, profile(string)}
+  end
+  defp get_profile(_, _), do: :error
 
   defp format_return(int) when is_integer(int), do: {:ok, int}
   defp format_return(:error), do: :error
