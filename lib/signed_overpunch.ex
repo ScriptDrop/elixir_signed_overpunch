@@ -1,5 +1,5 @@
 defmodule SignedOverpunch do
-  @error_message "invalid signed overpunch"
+  @error_message "invalid signed overpunch value: "
 
   @moduledoc """
   Module for converting a string in signed overpunch format into the
@@ -81,15 +81,15 @@ defmodule SignedOverpunch do
       9
 
       iex> SignedOverpunch.convert!("000")
-      ** (ArgumentError) invalid signed overpunch
+      ** (ArgumentError) invalid signed overpunch value: 000
 
       iex> SignedOverpunch.convert!("GOTCHA")
-      ** (ArgumentError) invalid signed overpunch
+      ** (ArgumentError) invalid signed overpunch value: GOTCHA
   """
   def convert!(string) do
     case convert(string) do
       {:ok, int} -> int
-      :error -> raise ArgumentError, @error_message
+      :error -> raise ArgumentError, @error_message <> string
     end
   end
 
