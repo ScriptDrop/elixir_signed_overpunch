@@ -93,6 +93,83 @@ defmodule SignedOverpunch do
     end
   end
 
+  @doc """
+  Converts an integer to signed overpunch format.
+
+  If successful, returns a tuple in the form of `{:ok, string}`. Otherwise, it
+  returns `:error`.
+
+  ## Examples
+
+      iex> SignedOverpunch.to_s(1000)
+      {:ok, "100{"}
+
+      iex> SignedOverpunch.to_s(-1000)
+      {:ok, "100}"}
+
+      iex> SignedOverpunch.to_s(9)
+      {:ok, "I"}
+
+      iex> SignedOverpunch.to_s("GOTCHA")
+      :error
+  """
+  def to_s(int) when is_integer(int) do
+    last_digit = int
+                 |> Kernel.to_string
+                 |> String.last
+                 |> String.to_integer
+
+    suffix = profile({sign(int), last_digit})
+
+    s = int
+    |> convert_to_positive
+    |> Kernel.to_string
+    |> String.slice(0..-2)
+    |> Kernel.<>(suffix)
+
+    {:ok, s}
+  end
+  def to_s(_), do: :error
+
+  @doc """
+  Converts an integer to signed overpunch format.
+
+  Similar to `SignedOverpunch.to_string/1`, but raises an `ArgumentError` if the
+  input provided is not an integer.
+
+  ## Examples
+
+      iex> SignedOverpunch.to_s!(1000)
+      "100{"
+
+      iex> SignedOverpunch.to_s!(-1000)
+      "100}"
+
+      iex> SignedOverpunch.to_s!(9)
+      "I"
+
+      iex> SignedOverpunch.to_s!("000")
+      ** (ArgumentError) invalid integer: 000
+
+      iex> SignedOverpunch.to_s!("GOTCHA")
+      ** (ArgumentError) invalid integer: GOTCHA
+
+      iex> SignedOverpunch.to_s!(10.0)
+      ** (ArgumentError) invalid integer: 10.0
+  """
+  def to_s!(int) do
+    case to_s(int) do
+      {:ok, string} -> string
+      :error -> raise ArgumentError, "invalid integer: #{int}"
+    end
+  end
+
+  defp sign(int) when int >= 0, do: :pos
+  defp sign(int) when int < 0, do: :neg
+
+  defp convert_to_positive(int) when int < 0, do: int * -1
+  defp convert_to_positive(int) when int >= 0, do: int
+
   defp perform_conversion({int, {neg_or_pos, add}}) do
     {neg_or_pos, int * 10 + add}
   end
@@ -115,25 +192,37 @@ defmodule SignedOverpunch do
   defp format_return(int) when is_integer(int), do: {:ok, int}
   defp format_return(:error), do: :error
 
-  defp profile("}"), do: {:neg, 0}
-  defp profile("J"), do: {:neg, 1}
-  defp profile("K"), do: {:neg, 2}
-  defp profile("L"), do: {:neg, 3}
-  defp profile("M"), do: {:neg, 4}
-  defp profile("N"), do: {:neg, 5}
-  defp profile("O"), do: {:neg, 6}
-  defp profile("P"), do: {:neg, 7}
-  defp profile("Q"), do: {:neg, 8}
-  defp profile("R"), do: {:neg, 9}
-  defp profile("{"), do: {:pos, 0}
-  defp profile("A"), do: {:pos, 1}
-  defp profile("B"), do: {:pos, 2}
-  defp profile("C"), do: {:pos, 3}
-  defp profile("D"), do: {:pos, 4}
-  defp profile("E"), do: {:pos, 5}
-  defp profile("F"), do: {:pos, 6}
-  defp profile("G"), do: {:pos, 7}
-  defp profile("H"), do: {:pos, 8}
-  defp profile("I"), do: {:pos, 9}
+  @profiles %{
+    "}" => {:neg, 0},
+    "J" => {:neg, 1},
+    "K" => {:neg, 2},
+    "L" => {:neg, 3},
+    "M" => {:neg, 4},
+    "N" => {:neg, 5},
+    "O" => {:neg, 6},
+    "P" => {:neg, 7},
+    "Q" => {:neg, 8},
+    "R" => {:neg, 9},
+    "{" => {:pos, 0},
+    "A" => {:pos, 1},
+    "B" => {:pos, 2},
+    "C" => {:pos, 3},
+    "D" => {:pos, 4},
+    "E" => {:pos, 5},
+    "F" => {:pos, 6},
+    "G" => {:pos, 7},
+    "H" => {:pos, 8},
+    "I" => {:pos, 9},
+  }
+
+  for {string, profile} <- @profiles do
+    defp profile(unquote(string)) do
+      unquote(profile)
+    end
+
+    defp profile(unquote(profile)) do
+      unquote(string)
+    end
+  end
   defp profile(_), do: :error
 end
